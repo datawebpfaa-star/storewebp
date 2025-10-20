@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Toko Gelap — Demo Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0b0f16;--card:#0f1724;--muted:#9aa4b2;--accent:#6ee7b7;--accent2:#60a5fa;--glass:rgba(255,255,255,0.03);--radius:12px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#03040a,#071021);color:#e6eef8;min-height:100vh}
+    .wrap{max-width:1100px;margin:28px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#041022;font-weight:800;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    h1{margin:0;font-size:20px}
+    .lead{color:var(--muted);font-size:13px;margin:0}
+    .controls{display:flex;gap:10px;align-items:center}
+    .search{background:var(--glass);padding:8px 12px;border-radius:999px;display:flex;align-items:center;gap:8px}
+    .search input{border:0;background:transparent;outline:none;color:inherit}
+    .cart-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer}
+
+    .hero{display:flex;gap:16px;align-items:center;margin-top:18px}
+    .hero .card{flex:1;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
+    .hero h2{margin:0}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:18px}
+    .product{background:var(--card);border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,0.03);position:relative;overflow:hidden}
+    .imgwrap{height:160px;border-radius:10px;overflow:hidden;background:linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));display:flex;align-items:center;justify-content:center}
+    .imgwrap img{width:100%;height:100%;object-fit:cover;display:block}
+    .pmeta{padding:10px}
+    .pmeta h3{margin:0 0 6px 0}
+    .price{font-weight:700}
+    .options{margin-top:8px;display:flex;gap:8px;flex-direction:column}
+    select,input[type=number]{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px;color:inherit}
+    .buy{display:flex;gap:8px;margin-top:10px}
+    .btn{flex:1;padding:10px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#041022}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+
+    .drawer{position:fixed;right:20px;bottom:20px;background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 30px 80px rgba(2,6,23,0.6)}
+    .muted{color:var(--muted)}
+
+    footer{text-align:center;color:var(--muted);margin-top:24px}
+
+    @media (max-width:720px){.hero{flex-direction:column}.controls{display:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">DG</div>
+        <div>
+          <h1>Toko Gelap</h1>
+          <p class="lead">Tema gelap — ganti produk & gambar sendiri</p>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="search"><input id="search" placeholder="Cari produk..."/></div>
+        <button class="cart-btn" id="cartBtn">Keranjang <span id="cartCount">0</span></button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="card">
+        <h2>Selamat datang di toko</h2>
+        <p class="muted">Silakan isi produk dan gambar nanti. Setiap produk punya opsi varian dan tombol "Beli Sekarang" yang langsung membuka WhatsApp admin.</p>
+      </div>
+      <div class="card" style="max-width:300px;text-align:center">
+        <div style="font-size:12px;color:var(--muted)">Admin WA</div>
+        <div style="font-weight:800;margin-top:8px">+62 882-7110-9247</div>
+        <div style="margin-top:8px;color:var(--muted);font-size:13px">Klik beli akan langsung mengarah ke chat</div>
+      </div>
+    </section>
+
+    <main>
+      <div id="grid" class="grid">
+        <!-- 5 product slots -->
+      </div>
+    </main>
+
+    <div id="drawer" class="drawer" style="display:none">
+      <div style="font-weight:700">Keranjang</div>
+      <div id="cartItems" style="margin-top:8px"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:12px"><div class="muted">Total</div><div id="cartTotal">Rp 0</div></div>
+    </div>
+
+    <footer>© 2025 Toko Gelap — Isi produk & gambar sendiri</footer>
+  </div>
+
+  <script>
+    /*
+      PENTING: Edit array `products` di bawah untuk mengganti nama, gambar, opsi, dan harga.
+      - image: URL gambar (atau lokal path)
+      - options: array of {name: 'Warna', values: ['Merah','Biru']}
+      - price: angka (integer) dalam Rupiah
+      Contoh produk yang mudah diganti disediakan (Produk 1..5)
+    */
+
+    const WA_NUMBER = '6288271109247'; // nomor admin yang kamu minta
+
+    const products = [
+      {id:1,name:'Produk 1',price:0,image:'https://via.placeholder.com/600x400?text=Produk+1',options:[{name:'Warna',values:['Default']},{name:'Ukuran',values:['S','M','L']} ]},
+      {id:2,name:'Produk 2',price:0,image:'https://via.placeholder.com/600x400?text=Produk+2',options:[{name:'Warna',values:['Default']}]},
+      {id:3,name:'Produk 3',price:0,image:'https://via.placeholder.com/600x400?text=Produk+3',options:[{name:'Varian',values:['Standar']}]},
+      {id:4,name:'Produk 4',price:0,image:'https://via.placeholder.com/600x400?text=Produk+4',options:[{name:'Warna',values:['Default']}]},
+      {id:5,name:'Produk 5',price:0,image:'https://via.placeholder.com/600x400?text=Produk+5',options:[{name:'Warna',values:['Default']}]}
+    ];
+
+    const cart = {};
+
+    function formatRupiah(n){if(!n) return 'Rp 0'; return 'Rp ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+
+    function buildGrid(){
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+      products.forEach((p)=>{
+        const el = document.createElement('div'); el.className='product';
+        el.innerHTML = `
+          <div class="imgwrap"><img src="${p.image}" alt="${p.name}"></div>
+          <div class="pmeta">
+            <h3 contenteditable="false" data-id="name-${p.id}">${p.name}</h3>
+            <div class="price" data-id="price-${p.id}">${formatRupiah(p.price)}</div>
+            <div class="options" id="opts-${p.id}"></div>
+            <div class="buy">
+              <input type="number" min="1" value="1" id="qty-${p.id}" style="width:80px" />
+              <button class="btn btn-ghost" onclick="addToCart(${p.id})">Tambah</button>
+              <button class="btn btn-primary" onclick="buyNow(${p.id})">Beli Sekarang</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(el);
+        // render options
+        const optsWrap = document.getElementById(`opts-${p.id}`);
+        p.options.forEach((op,oi)=>{
+          const sel = document.createElement('select'); sel.id = `opt-${p.id}-${oi}`;
+          const label = document.createElement('div'); label.style.fontSize='12px'; label.style.color='var(--muted)'; label.innerText = op.name;
+          optsWrap.appendChild(label);
+          op.values.forEach(v=>{ const o = document.createElement('option'); o.value=v; o.innerText=v; sel.appendChild(o); });
+          optsWrap.appendChild(sel);
+        })
+      })
+    }
+
+    function getSelectedOptions(productId){
+      const p = products.find(x=>x.id===productId);
+      if(!p) return [];
+      return p.options.map((op,oi)=>{
+        const el = document.getElementById(`opt-${productId}-${oi}`);
+        return {name:op.name, value: el? el.value : op.values[0]}
+      })
+    }
+
+    function buyNow(id){
+      const p = products.find(x=>x.id===id);
+      if(!p) return;
+      const qty = Number(document.getElementById(`qty-${id}`).value) || 1;
+      const opts = getSelectedOptions(id);
+      let pesan = `Halo Admin, saya mau beli:\n`;
+      pesan += `- Produk: ${p.name}\n`;
+      opts.forEach(o=> pesan += `- ${o.name}: ${o.value}\n`);
+      pesan += `- Jumlah: ${qty}\n`;
+      pesan += `- Harga per unit: ${formatRupiah(p.price)}\n`;
+      pesan += `- Total: ${formatRupiah(p.price * qty)}\n`;
+      pesan += `\nMohon info cara pembayaran dan pengiriman.`;
+
+      const url = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(pesan)}`;
+      window.open(url, '_blank');
+    }
+
+    function addToCart(id){
+      const p = products.find(x=>x.id===id);
+      if(!p) return;
+      const qty = Number(document.getElementById(`qty-${id}`).value) || 1;
+      const opts = getSelectedOptions(id);
+      const key = id + '|' + opts.map(o=>o.value).join('|');
+      cart[key] = cart[key] || {product:p,opts:opts,qty:0};
+      cart[key].qty += qty;
+      renderCart();
+    }
+
+    function renderCart(){
+      const itemsWrap = document.getElementById('cartItems');
+      itemsWrap.innerHTML = '';
+      let total = 0;
+      Object.values(cart).forEach(ci=>{
+        total += ci.product.price * ci.qty;
+        const div = document.createElement('div'); div.style.padding='8px 0'; div.style.borderBottom='1px dashed rgba(255,255,255,0.03)';
+        div.innerHTML = `<div style="font-weight:700">${ci.product.name}</div><div class="muted">${ci.opts.map(o=>o.name+': '+o.value).join(', ')} • ${ci.qty} x ${formatRupiah(ci.product.price)}</div>`;
+        itemsWrap.appendChild(div);
+      })
+      document.getElementById('cartTotal').innerText = formatRupiah(total);
+      document.getElementById('cartCount').innerText = Object.values(cart).reduce((s,c)=>s+c.qty,0);
+      document.getElementById('drawer').style.display = Object.keys(cart).length ? 'block' : 'none';
+    }
+
+    // search filter (simple)
+    document.getElementById('search').addEventListener('input', (e)=>{
+      const q = e.target.value.toLowerCase().trim();
+      document.querySelectorAll('.product').forEach((el,idx)=>{
+        const name = products[idx].name.toLowerCase();
+        el.style.display = name.includes(q) ? 'block' : 'none';
+      })
+    })
+
+    // init
+    buildGrid(); renderCart();
+
+  </script>
+</body>
+</html>

